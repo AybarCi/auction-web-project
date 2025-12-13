@@ -22,7 +22,7 @@ export default function AuctionEndedPage() {
                     .limit(1)
 
                 if (auctions && auctions.length > 0) {
-                    const endedAuction = auctions[0]
+                    const endedAuction = auctions[0] as Auction
                     setAuction(endedAuction)
 
                     // Get the winning bid
@@ -34,7 +34,7 @@ export default function AuctionEndedPage() {
                         .limit(1)
 
                     if (bids && bids.length > 0) {
-                        setWinner(bids[0])
+                        setWinner(bids[0] as Bid)
                     }
                 }
             } catch (error) {

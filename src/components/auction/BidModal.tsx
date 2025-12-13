@@ -68,7 +68,7 @@ export default function BidModal({
                     bid_amount: data.bid_amount,
                     bidder_name: data.bidder_name,
                     bidder_phone: data.bidder_phone
-                })
+                } as any)
 
             if (error) {
                 if (error.message.includes('mevcut teklifin')) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
-import type { Auction, Bid } from '../../lib/types'
+import type { Bid } from '../../lib/types'
 import Button from '../../components/ui/Button'
 
 interface Stats {
@@ -38,6 +38,7 @@ export default function AdminDashboard() {
             const { data: bidsData } = await supabase
                 .from('bids')
                 .select('bid_amount')
+                .returns<{ bid_amount: number }[]>()
 
             const totalBids = bidsData?.length || 0
             const totalAmount = bidsData?.reduce((sum, bid) => sum + bid.bid_amount, 0) || 0
@@ -60,9 +61,9 @@ export default function AdminDashboard() {
                 .limit(5)
 
             if (recentBidsData) {
-                setRecentBids(recentBidsData.map(bid => ({
+                setRecentBids(recentBidsData.map((bid: any) => ({
                     ...bid,
-                    auction_title: (bid.auctions as unknown as Auction)?.title
+                    auction_title: bid.auctions?.title
                 })))
             }
 

@@ -36,7 +36,7 @@ export function AuctionProvider({ children }: { children: ReactNode }) {
             if (auctionError) throw auctionError
 
             if (auctions && auctions.length > 0) {
-                const auction = auctions[0]
+                const auction = auctions[0] as Auction
                 setActiveAuction(auction)
 
                 // Fetch highest bid for this auction
@@ -50,7 +50,7 @@ export function AuctionProvider({ children }: { children: ReactNode }) {
                 if (bidError) throw bidError
 
                 if (bids && bids.length > 0) {
-                    setHighestBid(bids[0])
+                    setHighestBid(bids[0] as Bid)
                 }
 
                 // Get bid count

@@ -26,19 +26,50 @@ export interface Database {
         Tables: {
             auctions: {
                 Row: Auction
-                Insert: Omit<Auction, 'id' | 'created_at' | 'updated_at'>
-                Update: Partial<Omit<Auction, 'id' | 'created_at' | 'updated_at'>>
+                Insert: {
+                    id?: string
+                    title: string
+                    description?: string | null
+                    min_bid_amount: number
+                    end_time: string
+                    is_active?: boolean
+                    image_urls?: string[]
+                    winner_id?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    title?: string
+                    description?: string | null
+                    min_bid_amount?: number
+                    end_time?: string
+                    is_active?: boolean
+                    image_urls?: string[]
+                    winner_id?: string | null
+                    updated_at?: string
+                }
             }
             bids: {
                 Row: Bid
-                Insert: Omit<Bid, 'id' | 'created_at' | 'is_winner'>
-                Update: Partial<Omit<Bid, 'id' | 'created_at'>>
+                Insert: {
+                    id?: string
+                    auction_id: string
+                    bid_amount: number
+                    bidder_name: string
+                    bidder_phone: string
+                    is_winner?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    auction_id?: string
+                    bid_amount?: number
+                    bidder_name?: string
+                    bidder_phone?: string
+                    is_winner?: boolean
+                }
             }
         }
     }
-}
-
-export type AuctionWithBids = Auction & {
-    highest_bid?: Bid | null
-    bid_count?: number
 }

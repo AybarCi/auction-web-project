@@ -14,7 +14,6 @@ export default function AdminAuctions() {
     const navigate = useNavigate()
     const [auctions, setAuctions] = useState<AuctionWithBids[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [selectedAuction, setSelectedAuction] = useState<string | null>(null)
     const [bids, setBids] = useState<Bid[]>([])
     const [showBids, setShowBids] = useState(false)
 
@@ -28,6 +27,7 @@ export default function AdminAuctions() {
                 .from('auctions')
                 .select('*')
                 .order('created_at', { ascending: false })
+                .returns<Auction[]>()
 
             if (auctionsData) {
                 // Get bid stats for each auction
@@ -38,6 +38,7 @@ export default function AdminAuctions() {
                             .select('bid_amount')
                             .eq('auction_id', auction.id)
                             .order('bid_amount', { ascending: false })
+                            .returns<{ bid_amount: number }[]>()
 
                         return {
                             ...auction,
@@ -56,7 +57,6 @@ export default function AdminAuctions() {
     }
 
     const handleViewBids = async (auctionId: string) => {
-        setSelectedAuction(auctionId)
         setShowBids(true)
 
         const { data } = await supabase
@@ -64,6 +64,7 @@ export default function AdminAuctions() {
             .select('*')
             .eq('auction_id', auctionId)
             .order('bid_amount', { ascending: false })
+            .returns<Bid[]>()
 
         if (data) {
             setBids(data)
@@ -71,8 +72,7 @@ export default function AdminAuctions() {
     }
 
     const handleToggleActive = async (auctionId: string, currentStatus: boolean) => {
-        await supabase
-            .from('auctions')
+        await (supabase.from('auctions') as any)
             .update({ is_active: !currentStatus })
             .eq('id', auctionId)
 
@@ -223,8 +223,8 @@ export default function AdminAuctions() {
                                             <button
                                                 onClick={() => handleToggleActive(auction.id, auction.is_active)}
                                                 className={`px-3 py-1 rounded-full text-xs font-medium ${auction.is_active
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : 'bg-gray-100 text-gray-600'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-gray-100 text-gray-600'
                                                     }`}
                                             >
                                                 {auction.is_active ? 'Aktif' : 'Pasif'}

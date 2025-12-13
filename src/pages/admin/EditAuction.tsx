@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { supabase } from '../../lib/supabase'
+import type { Auction } from '../../lib/types'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 
@@ -33,15 +34,16 @@ export default function EditAuction() {
         const fetchAuction = async () => {
             if (!id) return
             const { data } = await supabase.from('auctions').select('*').eq('id', id).single()
-            if (data) {
+            const auction = data as Auction | null
+            if (auction) {
                 reset({
-                    title: data.title,
-                    description: data.description || '',
-                    min_bid_amount: data.min_bid_amount,
-                    end_time: new Date(data.end_time).toISOString().slice(0, 16),
-                    is_active: data.is_active
+                    title: auction.title,
+                    description: auction.description || '',
+                    min_bid_amount: auction.min_bid_amount,
+                    end_time: new Date(auction.end_time).toISOString().slice(0, 16),
+                    is_active: auction.is_active
                 })
-                setExistingImages(data.image_urls || [])
+                setExistingImages(auction.image_urls || [])
             }
             setIsLoading(false)
         }
@@ -53,7 +55,7 @@ export default function EditAuction() {
         setIsSubmitting(true)
         setError(null)
         try {
-            const { error: updateError } = await supabase.from('auctions').update({
+            const { error: updateError } = await (supabase.from('auctions') as any).update({
                 title: data.title,
                 description: data.description || null,
                 min_bid_amount: data.min_bid_amount,
