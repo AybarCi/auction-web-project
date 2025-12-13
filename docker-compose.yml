@@ -1,0 +1,9 @@
+services:
+  auction-app:
+    image: ghcr.io/aybarci/auction-web-project:latest
+    container_name: sma-auction
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped The image will be pulled from GitHub Container Registry
