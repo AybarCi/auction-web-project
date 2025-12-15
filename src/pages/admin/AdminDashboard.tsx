@@ -53,17 +53,28 @@ export default function AdminDashboard() {
             // Get recent bids
             const { data: recentBidsData } = await supabase
                 .from('bids')
-                .select(`
-          *,
-          auctions ( title )
-        `)
+                .select('*')
                 .order('created_at', { ascending: false })
                 .limit(5)
 
-            if (recentBidsData) {
+            if (recentBidsData && recentBidsData.length > 0) {
+                // Get auction titles for these bids
+                const auctionIds = [...new Set(recentBidsData.map((b: any) => b.auction_id))]
+                const { data: auctionsData } = await supabase
+                    .from('auctions')
+                    .select('id, title')
+                    .in('id', auctionIds)
+
+                const auctionTitles: Record<string, string> = {}
+                if (auctionsData) {
+                    auctionsData.forEach((a: any) => {
+                        auctionTitles[a.id] = a.title
+                    })
+                }
+
                 setRecentBids(recentBidsData.map((bid: any) => ({
                     ...bid,
-                    auction_title: bid.auctions?.title
+                    auction_title: auctionTitles[bid.auction_id] || 'Bilinmiyor'
                 })))
             }
 
@@ -215,6 +226,14 @@ export default function AdminDashboard() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                                     </svg>
                                     Tüm Ürünleri Görüntüle
+                                </Button>
+                            </Link>
+                            <Link to="/admin/patient">
+                                <Button className="w-full justify-start" variant="outline">
+                                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Hasta Bilgileri
                                 </Button>
                             </Link>
                         </div>

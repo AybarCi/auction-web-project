@@ -1,12 +1,14 @@
 import { Routes, Route } from 'react-router-dom'
 import { AuctionProvider } from './context/AuctionContext'
 import HomePage from './pages/HomePage'
+import PatientPage from './pages/PatientPage'
 import AuctionEndedPage from './pages/AuctionEndedPage'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminAuctions from './pages/admin/AdminAuctions'
 import NewAuction from './pages/admin/NewAuction'
 import EditAuction from './pages/admin/EditAuction'
+import PatientManagement from './pages/admin/PatientManagement'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -15,6 +17,7 @@ function App() {
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
+                <Route path="/hasta" element={<PatientPage />} />
                 <Route path="/bitti" element={<AuctionEndedPage />} />
 
                 {/* Admin Routes */}
@@ -37,6 +40,11 @@ function App() {
                 <Route path="/admin/auctions/:id" element={
                     <ProtectedRoute>
                         <EditAuction />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/patient" element={
+                    <ProtectedRoute>
+                        <PatientManagement />
                     </ProtectedRoute>
                 } />
             </Routes>

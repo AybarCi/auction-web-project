@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuction } from '../context/AuctionContext'
 import ImageGallery from '../components/auction/ImageGallery'
 import CountdownTimer from '../components/auction/CountdownTimer'
 import CurrentBid from '../components/auction/CurrentBid'
 import BidModal from '../components/auction/BidModal'
+import PatientInfo from '../components/patient/PatientInfo'
 import Button from '../components/ui/Button'
 
 export default function HomePage() {
@@ -67,11 +68,20 @@ export default function HomePage() {
             <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">
                 <div className="max-w-6xl mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-xl font-bold gradient-text">SMA Yardım</h1>
-                            <p className="text-xs text-gray-500">Açık Artırma Platformu</p>
+                        <div className="flex items-center gap-3">
+                            <img src="/logo.png" alt="SMA Yardım" className="w-20 h-20 rounded-xl" />
+                            <div>
+                                <h1 className="text-xl font-bold gradient-text">SMA Yardım</h1>
+                                <p className="text-xs text-gray-500">Açık Artırma Platformu</p>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
+                            <Link to="/hasta" className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-sm font-medium rounded-full hover:shadow-lg hover:scale-105 transition-all duration-200">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                Hasta Hakkında
+                            </Link>
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
                                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                                 Canlı
@@ -191,13 +201,23 @@ export default function HomePage() {
                         </div>
                     </motion.div>
                 </div>
+
+                {/* Patient Info Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-12"
+                >
+                    <PatientInfo />
+                </motion.div>
             </main>
 
             {/* Footer */}
             <footer className="bg-white border-t border-gray-100 mt-16 py-8">
                 <div className="max-w-6xl mx-auto px-4 text-center">
                     <p className="text-gray-500 text-sm">
-                        © 2024 SMA Yardım Açık Artırması. Tüm hakları saklıdır.
+                        © 2025 SMA Yardım Açık Artırması. Tüm hakları saklıdır.
                     </p>
                     <p className="text-gray-400 text-xs mt-2">
                         Bu platform hayır amaçlı oluşturulmuştur.

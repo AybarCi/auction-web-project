@@ -21,6 +21,24 @@ export interface Bid {
     created_at: string
 }
 
+export interface Patient {
+    id: string
+    full_name: string
+    description: string | null
+    social_instagram: string | null
+    social_twitter: string | null
+    social_facebook: string | null
+    social_tiktok: string | null
+    document_governorship: string | null
+    document_gene_report: string | null
+    document_hospital_proposal: string | null
+    document_medical_report: string | null
+    photo_url: string | null
+    is_active: boolean
+    created_at: string
+    updated_at: string
+}
+
 export interface Database {
     public: {
         Tables: {
