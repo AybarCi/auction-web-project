@@ -10,7 +10,7 @@
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+  background: linear-gradient(135deg, #FDF2F8 0%, #FAF5FF 100%);
   min-height: 100vh;
   color: #1E293B;
   -webkit-font-smoothing: antialiased;
@@ -45,7 +45,7 @@ body {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #3B82F6 0%, #14B8A6 100%);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -58,7 +58,7 @@ body {
 
 .btn-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.4);
 }
 
 /* Card hover effect */
@@ -73,9 +73,17 @@ body {
 
 /* Countdown number animation */
 @keyframes flip {
-  0% { transform: rotateX(0deg); }
-  50% { transform: rotateX(-90deg); }
-  100% { transform: rotateX(0deg); }
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  50% {
+    transform: rotateX(-90deg);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+  }
 }
 
 .flip-animation {
@@ -84,11 +92,14 @@ body {
 
 /* Pulse for current bid */
 @keyframes bid-pulse {
-  0%, 100% { 
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
   }
-  50% { 
-    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+
+  50% {
+    box-shadow: 0 0 0 15px rgba(168, 85, 247, 0);
   }
 }
 
