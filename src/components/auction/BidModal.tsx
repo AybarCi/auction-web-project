@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -39,6 +39,8 @@ export default function BidModal({
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false)
+    const [termsChecked, setTermsChecked] = useState(false)
 
     const minimumBid = currentHighestBid
         ? currentHighestBid.bid_amount + 100
@@ -50,6 +52,14 @@ export default function BidModal({
             bid_amount: minimumBid
         }
     })
+
+    // Reset terms acceptance when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setHasAcceptedTerms(false)
+            setTermsChecked(false)
+        }
+    }, [isOpen])
 
     const onSubmit = async (data: BidFormData) => {
         if (data.bid_amount < minimumBid) {
@@ -86,6 +96,8 @@ export default function BidModal({
             setTimeout(() => {
                 reset()
                 setIsSuccess(false)
+                setHasAcceptedTerms(false)
+                setTermsChecked(false)
                 onClose()
             }, 2000)
 
@@ -100,11 +112,19 @@ export default function BidModal({
         reset()
         setSubmitError(null)
         setIsSuccess(false)
+        setHasAcceptedTerms(false)
+        setTermsChecked(false)
         onClose()
     }
 
+    const handleAcceptTerms = () => {
+        if (termsChecked) {
+            setHasAcceptedTerms(true)
+        }
+    }
+
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} title="Teklif Ver">
+        <Modal isOpen={isOpen} onClose={handleClose} title={hasAcceptedTerms ? "Teklif Ver" : "Hukuki Bilgilendirme"}>
             {isSuccess ? (
                 <div className="text-center py-8">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -115,7 +135,103 @@ export default function BidModal({
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Teklifiniz Alındı!</h3>
                     <p className="text-gray-600">Açık artırma sonunda sizinle iletişime geçeceğiz.</p>
                 </div>
+            ) : !hasAcceptedTerms ? (
+                /* Legal Disclaimer Step */
+                <div className="space-y-4">
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-h-80 overflow-y-auto">
+                        <h3 className="font-bold text-red-800 text-lg mb-4">
+                            HUKUKİ SORUMLULUK VE BORÇ TAAHHÜTNAMESİ
+                        </h3>
+
+                        <div className="space-y-4 text-sm text-red-900">
+                            <div>
+                                <p className="font-semibold">1. HUKUKİ NİTELİK:</p>
+                                <p className="mt-1">
+                                    İşbu form aracılığıyla iletilen irade beyanı, 6098 sayılı Türk Borçlar Kanunu (TBK)
+                                    Madde 4 ve devamı uyarınca bağlayıcı bir "İcap" (Teklif) ve/veya "Kabul" niteliğindedir.
+                                    Katılımcı, "Gönder" veya "Hemen Al" butonuna bastığı an itibarıyla borç altına girdiğini
+                                    gayrikabili rücu kabul eder.
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="font-semibold">2. CAYMA VE CEZAİ ŞART:</p>
+                                <p className="mt-1">
+                                    Yardım kampanyasının suistimal edilmesini önlemek amacıyla; teklif verip ödeme yapmayan
+                                    katılımcı hakkında, kampanya sahibinin uğradığı maddi ve manevi zararların tazmini için
+                                    yasal yollara başvurulacaktır. Kampanya valilik onaylı olduğundan, sahte teklifler
+                                    "Kamu Güvenini Kötüye Kullanma" suçu kapsamında değerlendirilebilir.
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="font-semibold">3. DELİL SÖZLEŞMESİ:</p>
+                                <p className="mt-1">
+                                    Hukuk Muhakemeleri Kanunu Madde 193 uyarınca; katılımcının IP adresi, cihaz bilgisi,
+                                    tarayıcı kayıtları ve zaman damgası, taraflar arasında münhasır delil niteliği taşır.
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="font-semibold">4. KVKK:</p>
+                                <p className="mt-1">
+                                    Kişisel verileriniz, yasal yükümlülüklerin yerine getirilmesi ve yetkili makamlara
+                                    (Savcılık/Mahkeme) bilgi verilmesi amacıyla işlenmektedir.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Important Warning */}
+                    <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-4">
+                        <div className="flex items-start gap-3">
+                            <svg className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div>
+                                <p className="font-bold text-yellow-800">ÖNEMLİ UYARI</p>
+                                <p className="text-sm text-yellow-700 mt-1">
+                                    Ödeme yapmayacaksanız lütfen işlem yapmayınız. İşleminiz doğrudan
+                                    Emniyet ve Adli birimlerce izlenebilir niteliktedir.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Checkbox */}
+                    <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                        <input
+                            type="checkbox"
+                            checked={termsChecked}
+                            onChange={(e) => setTermsChecked(e.target.checked)}
+                            className="w-5 h-5 mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                            Yukarıdaki hukuki bilgilendirmeyi okudum ve <strong>kabul ediyorum</strong>.
+                            Teklif vererek borç altına girdiğimi anlıyorum.
+                        </span>
+                    </label>
+
+                    {/* Buttons */}
+                    <div className="flex gap-3">
+                        <Button
+                            variant="outline"
+                            className="flex-1"
+                            onClick={handleClose}
+                        >
+                            Vazgeç
+                        </Button>
+                        <Button
+                            className="flex-1"
+                            onClick={handleAcceptTerms}
+                            disabled={!termsChecked}
+                        >
+                            Devam Et
+                        </Button>
+                    </div>
+                </div>
             ) : (
+                /* Bid Form Step */
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="bg-primary-50 rounded-xl p-4 mb-6">
                         <p className="text-sm text-primary-700">
@@ -208,3 +324,4 @@ function formatCurrency(amount: number): string {
         maximumFractionDigits: 0
     }).format(amount)
 }
+
