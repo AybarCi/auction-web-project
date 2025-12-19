@@ -39,6 +39,15 @@ export interface Patient {
     updated_at: string
 }
 
+export interface BankAccount {
+    id: string
+    patient_id: string
+    bank_name: string
+    account_holder: string
+    iban: string
+    created_at: string
+}
+
 export interface Database {
     public: {
         Tables: {

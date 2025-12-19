@@ -23,11 +23,14 @@ export default function AdminAuctions() {
 
     const fetchAuctions = async () => {
         try {
-            const { data: auctionsData } = await supabase
+            const { data: auctionsData, error: fetchError } = await supabase
                 .from('auctions')
                 .select('*')
                 .order('created_at', { ascending: false })
                 .returns<Auction[]>()
+
+            console.log('Fetched auctions:', auctionsData)
+            console.log('Fetch error:', fetchError)
 
             if (auctionsData) {
                 // Get bid stats for each auction
@@ -168,6 +171,9 @@ export default function AdminAuctions() {
                                         Teklif Sayısı
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Oluşturulma
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Bitiş
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -217,18 +223,33 @@ export default function AdminAuctions() {
                                             </button>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {new Date(auction.created_at).toLocaleString('tr-TR')}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {new Date(auction.end_time).toLocaleString('tr-TR')}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <button
-                                                onClick={() => handleToggleActive(auction.id, auction.is_active)}
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${auction.is_active
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-gray-100 text-gray-600'
-                                                    }`}
-                                            >
-                                                {auction.is_active ? 'Aktif' : 'Pasif'}
-                                            </button>
+                                            {(() => {
+                                                const isExpired = new Date(auction.end_time) < new Date()
+                                                if (isExpired) {
+                                                    return (
+                                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                                            Süresi Doldu
+                                                        </span>
+                                                    )
+                                                }
+                                                return (
+                                                    <button
+                                                        onClick={() => handleToggleActive(auction.id, auction.is_active)}
+                                                        className={`px-3 py-1 rounded-full text-xs font-medium ${auction.is_active
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-gray-100 text-gray-600'
+                                                            }`}
+                                                    >
+                                                        {auction.is_active ? 'Aktif' : 'Pasif'}
+                                                    </button>
+                                                )
+                                            })()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div className="flex items-center justify-end gap-2">

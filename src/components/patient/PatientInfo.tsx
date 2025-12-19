@@ -1,17 +1,43 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
-import type { Patient } from '../../lib/types'
+import type { Patient, BankAccount } from '../../lib/types'
 
 export default function PatientInfo() {
     const [patient, setPatient] = useState<Patient | null>(null)
+    const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [copiedIban, setCopiedIban] = useState<string | null>(null)
+
+    const formatIBAN = (iban: string): string => {
+        return iban.match(/.{1,4}/g)?.join(' ') || iban
+    }
+
+    const copyToClipboard = async (iban: string) => {
+        try {
+            await navigator.clipboard.writeText(iban)
+            setCopiedIban(iban)
+            setTimeout(() => setCopiedIban(null), 2000)
+        } catch (err) {
+            console.error('Failed to copy:', err)
+        }
+    }
 
     useEffect(() => {
         const fetchPatient = async () => {
             const { data } = await supabase.from('patients').select('*').eq('is_active', true).limit(1)
             if (data && data.length > 0) {
-                setPatient(data[0] as Patient)
+                const p = data[0] as Patient
+                setPatient(p)
+                // Fetch bank accounts
+                const { data: accounts } = await supabase
+                    .from('patient_bank_accounts')
+                    .select('*')
+                    .eq('patient_id', p.id)
+                    .order('created_at', { ascending: true })
+                if (accounts) {
+                    setBankAccounts(accounts as BankAccount[])
+                }
             }
             setIsLoading(false)
         }
@@ -121,6 +147,53 @@ export default function PatientInfo() {
                                     <span className="text-gray-700">Tıbbi Rapor</span>
                                 </a>
                             )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Bank Accounts */}
+                {bankAccounts.length > 0 && (
+                    <div>
+                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Bağış Hesapları
+                        </h3>
+                        <div className="space-y-3">
+                            {bankAccounts.map((account) => (
+                                <div key={account.id} className="bg-gray-50 rounded-lg p-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div>
+                                            <p className="font-medium text-gray-900 text-sm">{account.bank_name}</p>
+                                            <p className="text-xs text-gray-600">{account.account_holder}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-gray-200">
+                                        <span className="flex-1 font-mono text-xs text-gray-800 select-all">{formatIBAN(account.iban)}</span>
+                                        <button
+                                            onClick={() => copyToClipboard(account.iban)}
+                                            className="flex items-center gap-1 px-2 py-1 bg-primary-500 text-white text-xs font-medium rounded hover:bg-primary-600 transition-colors"
+                                        >
+                                            {copiedIban === account.iban ? (
+                                                <>
+                                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    Kopyalandı
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                    </svg>
+                                                    Kopyala
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
