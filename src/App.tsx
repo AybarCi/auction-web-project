@@ -9,6 +9,7 @@ import AdminAuctions from './pages/admin/AdminAuctions'
 import NewAuction from './pages/admin/NewAuction'
 import EditAuction from './pages/admin/EditAuction'
 import PatientManagement from './pages/admin/PatientManagement'
+import AdminHistory from './pages/admin/AdminHistory'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -45,6 +46,11 @@ function App() {
                 <Route path="/admin/patient" element={
                     <ProtectedRoute>
                         <PatientManagement />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/history" element={
+                    <ProtectedRoute>
+                        <AdminHistory />
                     </ProtectedRoute>
                 } />
             </Routes>
